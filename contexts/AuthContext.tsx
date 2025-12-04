@@ -25,9 +25,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [company, setCompany] = useState<Company | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const supabase = createClient()
 
   useEffect(() => {
+    // Créer le client Supabase dans le useEffect pour éviter les problèmes de SSR/prerendering
+    const supabase = createClient()
+
     // Récupérer l'utilisateur initial
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user)
@@ -57,6 +59,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const loadProfileAndCompany = async (userId: string) => {
+    // Créer une nouvelle instance du client pour chaque appel
+    const supabase = createClient()
+
     try {
       // Charger le profil
       const { data: profileData, error: profileError } = await supabase
@@ -96,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
+    const supabase = createClient()
     await supabase.auth.signOut()
     setUser(null)
     setProfile(null)
