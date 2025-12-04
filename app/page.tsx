@@ -1,6 +1,59 @@
-import Link from 'next/link'
+'use client'
+
+import { useState, FormEvent } from 'react'
 
 export default function Home() {
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    activityType: 'Plomberie',
+    message: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
+  // Smooth scroll to contact section
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contact')
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  // Handle form submission (fake for now)
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    setIsSubmitting(false)
+    setIsSubmitted(true)
+
+    // Reset form after 5 seconds
+    setTimeout(() => {
+      setIsSubmitted(false)
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        activityType: 'Plomberie',
+        message: ''
+      })
+    }, 5000)
+  }
+
   return (
     <div className="min-h-screen">
       {/* Navbar */}
@@ -26,7 +79,10 @@ export default function Home() {
               <a href="#contact" className="text-gray-600 hover:text-gray-900 transition-colors">
                 Contact
               </a>
-              <button className="px-5 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-all">
+              <button
+                onClick={scrollToContact}
+                className="px-5 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-all"
+              >
                 Demander une démo
               </button>
             </div>
@@ -78,7 +134,10 @@ export default function Home() {
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <button className="px-8 py-4 bg-primary text-white rounded-lg font-medium hover:bg-primary-hover transition-all shadow-sm hover:shadow-md">
+                <button
+                  onClick={scrollToContact}
+                  className="px-8 py-4 bg-primary text-white rounded-lg font-medium hover:bg-primary-hover transition-all shadow-sm hover:shadow-md"
+                >
                   Demander une démo
                 </button>
                 <button className="px-8 py-4 text-gray-700 border border-gray-300 rounded-lg font-medium hover:border-gray-400 transition-all">
@@ -421,7 +480,10 @@ export default function Home() {
                 </li>
               </ul>
 
-              <button className="w-full px-8 py-4 border border-gray-300 rounded-lg font-medium hover:border-primary hover:text-primary transition-all">
+              <button
+                onClick={scrollToContact}
+                className="w-full px-8 py-4 border border-gray-300 rounded-lg font-medium hover:border-primary hover:text-primary transition-all"
+              >
                 Parler de mon activité
               </button>
             </div>
@@ -458,7 +520,10 @@ export default function Home() {
                 </li>
               </ul>
 
-              <button className="w-full px-8 py-4 bg-primary text-white rounded-lg font-medium hover:bg-primary-hover transition-all shadow-sm hover:shadow-md">
+              <button
+                onClick={scrollToContact}
+                className="w-full px-8 py-4 bg-primary text-white rounded-lg font-medium hover:bg-primary-hover transition-all shadow-sm hover:shadow-md"
+              >
                 Demander une démo
               </button>
             </div>
@@ -466,8 +531,130 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Contact / Demo Request Section */}
+      <section id="contact" className="py-24 bg-gray-50 px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">
+              Parlons de ton activité
+            </h2>
+            <p className="text-xl text-gray-600">
+              Dis-moi comment tu travailles aujourd'hui, et on verra si ArtisanOS peut t'enlever du poids.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Name Field */}
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  Nom / Prénom <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                  placeholder="Jean Dupont"
+                />
+              </div>
+
+              {/* Email Field */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                  placeholder="jean@exemple.ch"
+                />
+              </div>
+
+              {/* Phone Field */}
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                  Téléphone
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                  placeholder="+41 79 123 45 67"
+                />
+              </div>
+
+              {/* Activity Type Field */}
+              <div>
+                <label htmlFor="activityType" className="block text-sm font-medium text-gray-700 mb-2">
+                  Type d'activité
+                </label>
+                <select
+                  id="activityType"
+                  name="activityType"
+                  value={formData.activityType}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none bg-white"
+                >
+                  <option value="Plomberie">Plomberie</option>
+                  <option value="Électricité">Électricité</option>
+                  <option value="Peinture">Peinture</option>
+                  <option value="Rénovation">Rénovation</option>
+                  <option value="Autre">Autre</option>
+                </select>
+              </div>
+
+              {/* Message Field */}
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={4}
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none"
+                  placeholder="Parle-moi de ton activité, de tes besoins, des outils que tu utilises actuellement..."
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full px-8 py-4 bg-primary text-white rounded-lg font-medium hover:bg-primary-hover transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Envoi en cours...' : 'Envoyer ma demande'}
+              </button>
+
+              {/* Success Message */}
+              {isSubmitted && (
+                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-green-800 text-center font-medium">
+                    Merci, nous te répondrons rapidement.
+                  </p>
+                </div>
+              )}
+            </form>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer id="contact" className="bg-gray-900 text-gray-300 py-16 px-6 lg:px-8">
+      <footer className="bg-gray-900 text-gray-300 py-16 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Left Side */}
@@ -488,7 +675,7 @@ export default function Home() {
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 Politique de confidentialité
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="#contact" className="text-gray-400 hover:text-white transition-colors">
                 Contact
               </a>
             </div>
