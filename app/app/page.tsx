@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { createClient } from '@/lib/supabase/client'
-import { Card } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
+import { motion } from 'framer-motion'
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 interface DashboardStats {
   chantiersEnCours: number
@@ -53,7 +53,6 @@ export default function DashboardPage() {
     const today = new Date().toISOString().split('T')[0]
 
     try {
-      // Statistiques
       const [
         { count: chantiersCount },
         { count: devisCount },
@@ -89,17 +88,9 @@ export default function DashboardPage() {
         interventionsAujourdhui: interventionsCount ?? 0,
       })
 
-      // Derniers chantiers
       const { data: chantiersData } = await supabase
         .from('chantiers')
-        .select(
-          `
-          id,
-          titre,
-          status,
-          clients (name)
-        `
-        )
+        .select('id, titre, status, clients(name)')
         .eq('company_id', company.id)
         .order('created_at', { ascending: false })
         .limit(5)
@@ -115,18 +106,9 @@ export default function DashboardPage() {
         )
       }
 
-      // Dernières factures
       const { data: facturesData } = await supabase
         .from('factures')
-        .select(
-          `
-          id,
-          numero,
-          status,
-          total_ttc,
-          clients (name)
-        `
-        )
+        .select('id, numero, status, total_ttc, clients(name)')
         .eq('company_id', company.id)
         .order('created_at', { ascending: false })
         .limit(5)
@@ -150,30 +132,47 @@ export default function DashboardPage() {
     }
   }
 
+  // Mock data for charts
+  const monthlyData = [
+    { month: 'Juil', devis: 45000, factures: 38000 },
+    { month: 'Août', devis: 52000, factures: 41000 },
+    { month: 'Sept', devis: 48000, factures: 47000 },
+    { month: 'Oct', devis: 61000, factures: 53000 },
+    { month: 'Nov', devis: 55000, factures: 49000 },
+    { month: 'Déc', devis: 67000, factures: 58000 },
+  ]
+
+  const statusData = [
+    { name: 'En cours', value: stats.chantiersEnCours || 7, color: '#fbbf24' },
+    { name: 'Planifiés', value: 3, color: '#3b82f6' },
+    { name: 'Terminés', value: 12, color: '#10b981' },
+  ]
+
   const getStatusBadge = (status: string, type: 'chantier' | 'facture') => {
     const statusMap = {
       chantier: {
-        planned: { variant: 'info' as const, label: 'Planifié' },
-        en_cours: { variant: 'success' as const, label: 'En cours' },
-        paused: { variant: 'warning' as const, label: 'En pause' },
-        completed: { variant: 'neutral' as const, label: 'Terminé' },
-        cancelled: { variant: 'danger' as const, label: 'Annulé' },
+        planned: { bg: 'bg-primary/20', text: 'text-primary', label: 'Planifié' },
+        en_cours: { bg: 'bg-warning/20', text: 'text-warning', label: 'En cours' },
+        paused: { bg: 'bg-gray-500/20', text: 'text-gray-400', label: 'Pause' },
+        completed: { bg: 'bg-success/20', text: 'text-success', label: 'Terminé' },
+        cancelled: { bg: 'bg-danger/20', text: 'text-danger', label: 'Annulé' },
       },
       facture: {
-        draft: { variant: 'neutral' as const, label: 'Brouillon' },
-        sent: { variant: 'info' as const, label: 'Envoyée' },
-        paid: { variant: 'success' as const, label: 'Payée' },
-        overdue: { variant: 'danger' as const, label: 'En retard' },
-        cancelled: { variant: 'neutral' as const, label: 'Annulée' },
+        draft: { bg: 'bg-gray-500/20', text: 'text-gray-400', label: 'Brouillon' },
+        sent: { bg: 'bg-primary/20', text: 'text-primary', label: 'Envoyée' },
+        paid: { bg: 'bg-success/20', text: 'text-success', label: 'Payée' },
+        overdue: { bg: 'bg-danger/20', text: 'text-danger', label: 'En retard' },
+        cancelled: { bg: 'bg-gray-500/20', text: 'text-gray-400', label: 'Annulée' },
       },
     }
 
-    const config =
-      statusMap[type][status as keyof (typeof statusMap)[typeof type]]
+    const config = statusMap[type][status as keyof typeof statusMap[typeof type]]
     return config ? (
-      <Badge variant={config.variant}>{config.label}</Badge>
+      <span className={`px-2 py-1 text-xs font-medium rounded ${config.bg} ${config.text}`}>
+        {config.label}
+      </span>
     ) : (
-      <Badge variant="neutral">{status}</Badge>
+      <span className="px-2 py-1 text-xs font-medium rounded bg-gray-500/20 text-gray-400">{status}</span>
     )
   }
 
@@ -181,183 +180,211 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-96">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement du dashboard...</p>
+          <div className="w-12 h-12 border-4 border-warning border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Chargement du dashboard...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-        <p className="text-gray-600">
-          Bienvenue {profile?.full_name} · {company?.name}
-        </p>
+    <div className="space-y-6">
+      {/* Hero Section with Construction Image */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative h-80 rounded-2xl overflow-hidden group"
+      >
+        {/* Background gradient (simulate chantier) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-900 via-gray-900 to-blue-900" />
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-t from-dark via-dark/60 to-transparent"
+          whileHover={{ backdropFilter: 'blur(2px)' }}
+        />
+
+        {/* Stats Overlay */}
+        <div className="relative z-10 h-full flex items-end p-8">
+          <div className="w-full">
+            <motion.h1
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-4xl font-bold text-white mb-6"
+            >
+              Bienvenue, {profile?.full_name?.split(' ')[0]}
+            </motion.h1>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { label: 'Chantiers en cours', value: stats.chantiersEnCours, color: 'from-warning to-warning-dark', delay: 0.3 },
+                { label: 'Devis en attente', value: stats.devisEnAttente, color: 'from-primary to-primary-600', delay: 0.4 },
+                { label: 'Factures en retard', value: stats.facturesEnRetard, color: 'from-danger to-red-700', delay: 0.5 },
+                { label: 'Interventions aujourd\'hui', value: stats.interventionsAujourdhui, color: 'from-success to-green-700', delay: 0.6 },
+              ].map((stat, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: stat.delay }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className={`bg-gradient-to-br ${stat.color} p-4 rounded-lg cursor-pointer`}
+                >
+                  <p className="text-sm text-white/80 mb-1">{stat.label}</p>
+                  <p className="text-3xl font-bold text-white">{stat.value}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* KPI Cards */}
+      <div className="grid md:grid-cols-3 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-warning/50 transition-all"
+        >
+          <h3 className="text-lg font-semibold text-white mb-2">Chiffre d\'affaires estimé</h3>
+          <p className="text-3xl font-bold text-warning mb-1">CHF 328,450</p>
+          <p className="text-sm text-gray-400">+12% vs mois dernier</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-success/50 transition-all"
+        >
+          <h3 className="text-lg font-semibold text-white mb-2">Taux de conversion</h3>
+          <p className="text-3xl font-bold text-success mb-1">68%</p>
+          <p className="text-sm text-gray-400">Devis → Chantiers</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-primary/50 transition-all"
+        >
+          <h3 className="text-lg font-semibold text-white mb-2">Heures travaillées</h3>
+          <p className="text-3xl font-bold text-primary mb-1">1,247h</p>
+          <p className="text-sm text-gray-400">Ce mois</p>
+        </motion.div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card padding="md" className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-blue-700 mb-1">
-                Chantiers en cours
-              </p>
-              <p className="text-3xl font-bold text-blue-900">
-                {stats.chantiersEnCours}
-              </p>
-            </div>
-            <svg
-              className="w-8 h-8 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-              />
-            </svg>
-          </div>
-        </Card>
-
-        <Card padding="md" className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-orange-700 mb-1">
-                Devis en attente
-              </p>
-              <p className="text-3xl font-bold text-orange-900">
-                {stats.devisEnAttente}
-              </p>
-            </div>
-            <svg
-              className="w-8 h-8 text-orange-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          </div>
-        </Card>
-
-        <Card padding="md" className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-red-700 mb-1">
-                Factures en retard
-              </p>
-              <p className="text-3xl font-bold text-red-900">
-                {stats.facturesEnRetard}
-              </p>
-            </div>
-            <svg
-              className="w-8 h-8 text-red-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-        </Card>
-
-        <Card padding="md" className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-green-700 mb-1">
-                Interventions aujourd\'hui
-              </p>
-              <p className="text-3xl font-bold text-green-900">
-                {stats.interventionsAujourdhui}
-              </p>
-            </div>
-            <svg
-              className="w-8 h-8 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
-        </Card>
-      </div>
-
-      {/* Recent Data */}
+      {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Chantiers Récents */}
-        <Card padding="lg">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">
-            Derniers chantiers
-          </h2>
+        {/* Bar Chart */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.0 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-6"
+        >
+          <h3 className="text-lg font-semibold text-white mb-4">Évolution mensuelle</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={monthlyData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+              <XAxis dataKey="month" stroke="#94a3b8" />
+              <YAxis stroke="#94a3b8" />
+              <Tooltip
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
+                labelStyle={{ color: '#fff' }}
+              />
+              <Legend />
+              <Bar dataKey="devis" fill="#3b82f6" name="Devis (CHF)" />
+              <Bar dataKey="factures" fill="#fbbf24" name="Factures (CHF)" />
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
+
+        {/* Pie Chart */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.1 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-6"
+        >
+          <h3 className="text-lg font-semibold text-white mb-4">Répartition des chantiers</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={statusData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value }) => `${name}: ${value}`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {statusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </div>
+
+      {/* Lists */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Chantiers */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-6"
+        >
+          <h3 className="text-lg font-semibold text-white mb-4">Chantiers récents</h3>
           {recentChantiers.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">
-              Aucun chantier pour le moment
-            </p>
+            <p className="text-gray-500 text-center py-8">Aucun chantier</p>
           ) : (
             <div className="space-y-3">
               {recentChantiers.map((chantier) => (
                 <div
                   key={chantier.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-3 bg-dark-lighter rounded-lg hover:bg-dark-lighter/70 transition-colors cursor-pointer"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">
-                      {chantier.titre}
-                    </p>
-                    <p className="text-sm text-gray-500">{chantier.client_name}</p>
+                    <p className="font-medium text-white truncate">{chantier.titre}</p>
+                    <p className="text-sm text-gray-400">{chantier.client_name}</p>
                   </div>
                   {getStatusBadge(chantier.status, 'chantier')}
                 </div>
               ))}
             </div>
           )}
-        </Card>
+        </motion.div>
 
-        {/* Factures Récentes */}
-        <Card padding="lg">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">
-            Dernières factures
-          </h2>
+        {/* Factures */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.3 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-6"
+        >
+          <h3 className="text-lg font-semibold text-white mb-4">Factures récentes</h3>
           {recentFactures.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">
-              Aucune facture pour le moment
-            </p>
+            <p className="text-gray-500 text-center py-8">Aucune facture</p>
           ) : (
             <div className="space-y-3">
               {recentFactures.map((facture) => (
                 <div
                   key={facture.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-3 bg-dark-lighter rounded-lg hover:bg-dark-lighter/70 transition-colors cursor-pointer"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900">{facture.numero}</p>
-                    <p className="text-sm text-gray-500">{facture.client_name}</p>
+                    <p className="font-medium text-white">{facture.numero}</p>
+                    <p className="text-sm text-gray-400">{facture.client_name}</p>
                   </div>
                   <div className="text-right mr-3">
-                    <p className="font-semibold text-gray-900">
+                    <p className="font-semibold text-white">
                       CHF {facture.total_ttc.toLocaleString('fr-CH')}
                     </p>
                   </div>
@@ -366,7 +393,7 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
-        </Card>
+        </motion.div>
       </div>
     </div>
   )

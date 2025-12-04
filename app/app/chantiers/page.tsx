@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { createClient } from '@/lib/supabase/client'
-import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
+import { motion } from 'framer-motion'
 import { Database } from '@/types/database'
 
 type Chantier = Database['public']['Tables']['chantiers']['Row'] & {
@@ -50,17 +48,19 @@ export default function ChantiersPage() {
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      planned: { variant: 'info' as const, label: 'Planifié' },
-      en_cours: { variant: 'success' as const, label: 'En cours' },
-      paused: { variant: 'warning' as const, label: 'En pause' },
-      completed: { variant: 'neutral' as const, label: 'Terminé' },
-      cancelled: { variant: 'danger' as const, label: 'Annulé' },
+      planned: { bg: 'bg-primary/20', text: 'text-primary', label: 'Planifié' },
+      en_cours: { bg: 'bg-warning/20', text: 'text-warning', label: 'En cours' },
+      paused: { bg: 'bg-gray-500/20', text: 'text-gray-400', label: 'En pause' },
+      completed: { bg: 'bg-success/20', text: 'text-success', label: 'Terminé' },
+      cancelled: { bg: 'bg-danger/20', text: 'text-danger', label: 'Annulé' },
     }
     const config = statusMap[status as keyof typeof statusMap]
     return config ? (
-      <Badge variant={config.variant}>{config.label}</Badge>
+      <span className={`px-2 py-1 text-xs font-medium rounded ${config.bg} ${config.text}`}>
+        {config.label}
+      </span>
     ) : (
-      <Badge variant="neutral">{status}</Badge>
+      <span className="px-2 py-1 text-xs font-medium rounded bg-gray-500/20 text-gray-400">{status}</span>
     )
   }
 
@@ -68,8 +68,8 @@ export default function ChantiersPage() {
     return (
       <div className="flex items-center justify-center min-h-96">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement des chantiers...</p>
+          <div className="w-12 h-12 border-4 border-warning border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Chargement des chantiers...</p>
         </div>
       </div>
     )
@@ -77,14 +77,25 @@ export default function ChantiersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Chantiers</h1>
-          <p className="text-gray-600">{chantiers.length} chantier(s) au total</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Chantiers</h1>
+          <p className="text-gray-400">
+            Sites en construction • {chantiers.length} chantier{chantiers.length !== 1 ? 's' : ''} au total
+          </p>
         </div>
-        <Button variant="primary">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 px-4 py-2.5 bg-warning text-dark font-semibold rounded-lg hover:bg-warning-light transition-colors"
+        >
           <svg
-            className="w-5 h-5 mr-2"
+            className="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -97,14 +108,20 @@ export default function ChantiersPage() {
             />
           </svg>
           Nouveau chantier
-        </Button>
-      </div>
+        </motion.button>
+      </motion.div>
 
+      {/* Chantiers List */}
       {chantiers.length === 0 ? (
-        <Card padding="lg">
-          <div className="text-center py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-12"
+        >
+          <div className="text-center">
             <svg
-              className="w-16 h-16 text-gray-400 mx-auto mb-4"
+              className="w-16 h-16 text-gray-500 mx-auto mb-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -116,39 +133,52 @@ export default function ChantiersPage() {
                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
               />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-white mb-2">
               Aucun chantier pour le moment
             </h3>
-            <p className="text-gray-600 mb-6">
-              Créez votre premier chantier pour commencer
+            <p className="text-gray-400 mb-6">
+              Créez votre premier chantier pour suivre vos projets
             </p>
-            <Button variant="primary">Créer mon premier chantier</Button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-warning text-dark font-semibold rounded-lg hover:bg-warning-light transition-colors"
+            >
+              Créer mon premier chantier
+            </motion.button>
           </div>
-        </Card>
+        </motion.div>
       ) : (
         <div className="grid gap-4">
-          {chantiers.map((c) => (
-            <Card key={c.id} padding="md" hover className="cursor-pointer">
+          {chantiers.map((c, idx) => (
+            <motion.div
+              key={c.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
+              whileHover={{ scale: 1.01, y: -2 }}
+              className="bg-dark-card border border-dark-border rounded-xl p-6 cursor-pointer hover:border-warning/50 transition-all"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-gray-900 text-lg">
+                    <h3 className="font-semibold text-white text-lg">
                       {c.titre}
                     </h3>
                     {getStatusBadge(c.status)}
                   </div>
-                  <p className="text-sm text-gray-600 mb-1">
-                    Client : {c.clients?.name ?? 'Client inconnu'}
+                  <p className="text-sm text-gray-400 mb-1">
+                    <span className="text-gray-500">Client :</span> {c.clients?.name ?? 'Client inconnu'}
                   </p>
                   {c.date_debut_prevue && (
-                    <p className="text-sm text-gray-600">
-                      Début prévu :{' '}
+                    <p className="text-sm text-gray-400">
+                      <span className="text-gray-500">Début prévu :</span>{' '}
                       {new Date(c.date_debut_prevue).toLocaleDateString('fr-CH')}
                     </p>
                   )}
                 </div>
                 <svg
-                  className="w-5 h-5 text-gray-400"
+                  className="w-5 h-5 text-gray-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -161,7 +191,7 @@ export default function ChantiersPage() {
                   />
                 </svg>
               </div>
-            </Card>
+            </motion.div>
           ))}
         </div>
       )}

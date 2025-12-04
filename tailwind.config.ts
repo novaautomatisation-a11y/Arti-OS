@@ -9,26 +9,35 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Thème sombre chantier
+        dark: {
+          DEFAULT: '#020617',
+          lighter: '#0f172a',
+          card: '#1e293b',
+          border: '#334155',
+        },
+        // Jaune chantier (warning tape)
+        warning: {
+          DEFAULT: '#fbbf24',
+          dark: '#f59e0b',
+          light: '#fde047',
+        },
+        // Orange sécurité
+        safety: {
+          DEFAULT: '#fb923c',
+          dark: '#f97316',
+          light: '#fdba74',
+        },
+        // Reste des couleurs
         primary: {
-          DEFAULT: '#1e40af',
+          DEFAULT: '#3b82f6',
           50: '#eff6ff',
-          100: '#dbeafe',
-          600: '#1e40af',
-          700: '#1e3a8a',
-          800: '#1e3a8a',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
         },
-        accent: {
-          DEFAULT: '#f97316',
-          50: '#fff7ed',
-          100: '#ffedd5',
-          500: '#f97316',
-          600: '#ea580c',
-        },
-        background: '#f9fafb',
-        muted: {
-          DEFAULT: '#6b7280',
-          foreground: '#374151',
-        },
+        success: '#10b981',
+        danger: '#ef4444',
       },
       fontFamily: {
         sans: [
@@ -36,11 +45,27 @@ const config: Config = {
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
-          'Roboto',
-          'Helvetica Neue',
-          'Arial',
           'sans-serif',
         ],
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'slide-up': 'slideUp 0.5s ease-out',
+        'slide-down': 'slideDown 0.3s ease-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
       },
     },
   },

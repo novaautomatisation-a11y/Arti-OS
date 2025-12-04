@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { createClient } from '@/lib/supabase/client'
-import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
+import { motion } from 'framer-motion'
 import { Database } from '@/types/database'
 
 type Devis = Database['public']['Tables']['devis']['Row'] & {
@@ -50,17 +48,19 @@ export default function DevisPage() {
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      draft: { variant: 'neutral' as const, label: 'Brouillon' },
-      sent: { variant: 'info' as const, label: 'Envoyé' },
-      accepted: { variant: 'success' as const, label: 'Accepté' },
-      refused: { variant: 'danger' as const, label: 'Refusé' },
-      expired: { variant: 'neutral' as const, label: 'Expiré' },
+      draft: { bg: 'bg-gray-500/20', text: 'text-gray-400', label: 'Brouillon' },
+      sent: { bg: 'bg-primary/20', text: 'text-primary', label: 'Envoyé' },
+      accepted: { bg: 'bg-success/20', text: 'text-success', label: 'Accepté' },
+      refused: { bg: 'bg-danger/20', text: 'text-danger', label: 'Refusé' },
+      expired: { bg: 'bg-gray-500/20', text: 'text-gray-400', label: 'Expiré' },
     }
     const config = statusMap[status as keyof typeof statusMap]
     return config ? (
-      <Badge variant={config.variant}>{config.label}</Badge>
+      <span className={`px-2 py-1 text-xs font-medium rounded ${config.bg} ${config.text}`}>
+        {config.label}
+      </span>
     ) : (
-      <Badge variant="neutral">{status}</Badge>
+      <span className="px-2 py-1 text-xs font-medium rounded bg-gray-500/20 text-gray-400">{status}</span>
     )
   }
 
@@ -68,8 +68,8 @@ export default function DevisPage() {
     return (
       <div className="flex items-center justify-center min-h-96">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement des devis...</p>
+          <div className="w-12 h-12 border-4 border-warning border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Chargement des devis...</p>
         </div>
       </div>
     )
@@ -77,14 +77,25 @@ export default function DevisPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Devis</h1>
-          <p className="text-gray-600">{devis.length} devis au total</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Devis</h1>
+          <p className="text-gray-400">
+            Propositions commerciales • {devis.length} devis au total
+          </p>
         </div>
-        <Button variant="primary">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 px-4 py-2.5 bg-warning text-dark font-semibold rounded-lg hover:bg-warning-light transition-colors"
+        >
           <svg
-            className="w-5 h-5 mr-2"
+            className="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -97,14 +108,20 @@ export default function DevisPage() {
             />
           </svg>
           Nouveau devis
-        </Button>
-      </div>
+        </motion.button>
+      </motion.div>
 
+      {/* Devis List */}
       {devis.length === 0 ? (
-        <Card padding="lg">
-          <div className="text-center py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-12"
+        >
+          <div className="text-center">
             <svg
-              className="w-16 h-16 text-gray-400 mx-auto mb-4"
+              className="w-16 h-16 text-gray-500 mx-auto mb-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -116,36 +133,49 @@ export default function DevisPage() {
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-white mb-2">
               Aucun devis pour le moment
             </h3>
-            <p className="text-gray-600 mb-6">
-              Créez votre premier devis pour commencer
+            <p className="text-gray-400 mb-6">
+              Créez votre première proposition commerciale
             </p>
-            <Button variant="primary">Créer mon premier devis</Button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-warning text-dark font-semibold rounded-lg hover:bg-warning-light transition-colors"
+            >
+              Créer mon premier devis
+            </motion.button>
           </div>
-        </Card>
+        </motion.div>
       ) : (
         <div className="grid gap-4">
-          {devis.map((d) => (
-            <Card key={d.id} padding="md" hover className="cursor-pointer">
+          {devis.map((d, idx) => (
+            <motion.div
+              key={d.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
+              whileHover={{ scale: 1.01, y: -2 }}
+              className="bg-dark-card border border-dark-border rounded-xl p-6 cursor-pointer hover:border-warning/50 transition-all"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-gray-900 text-lg">
+                    <h3 className="font-semibold text-white text-lg">
                       {d.numero}
                     </h3>
                     {getStatusBadge(d.status)}
                   </div>
-                  <p className="text-sm text-gray-600 mb-1">
-                    Client : {d.clients?.name ?? 'Client inconnu'}
+                  <p className="text-sm text-gray-400 mb-1">
+                    <span className="text-gray-500">Client :</span> {d.clients?.name ?? 'Client inconnu'}
                   </p>
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-warning">
                     Total : CHF {d.total_ttc.toLocaleString('fr-CH')}
                   </p>
                 </div>
                 <svg
-                  className="w-5 h-5 text-gray-400"
+                  className="w-5 h-5 text-gray-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -158,7 +188,7 @@ export default function DevisPage() {
                   />
                 </svg>
               </div>
-            </Card>
+            </motion.div>
           ))}
         </div>
       )}

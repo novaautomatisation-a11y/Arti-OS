@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { createClient } from '@/lib/supabase/client'
-import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
+import { motion } from 'framer-motion'
 import { Database } from '@/types/database'
 
 type Intervention = Database['public']['Tables']['interventions']['Row'] & {
@@ -61,8 +59,8 @@ export default function PlanningPage() {
     return (
       <div className="flex items-center justify-center min-h-96">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement du planning...</p>
+          <div className="w-12 h-12 border-4 border-warning border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Chargement du planning...</p>
         </div>
       </div>
     )
@@ -70,16 +68,25 @@ export default function PlanningPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Planning</h1>
-          <p className="text-gray-600">
-            {interventions.length} intervention(s) cette semaine
+          <h1 className="text-3xl font-bold text-white mb-2">Planning</h1>
+          <p className="text-gray-400">
+            Interventions de la semaine • {interventions.length} intervention{interventions.length !== 1 ? 's' : ''} planifiée{interventions.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Button variant="primary">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 px-4 py-2.5 bg-warning text-dark font-semibold rounded-lg hover:bg-warning-light transition-colors"
+        >
           <svg
-            className="w-5 h-5 mr-2"
+            className="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -92,14 +99,20 @@ export default function PlanningPage() {
             />
           </svg>
           Planifier une intervention
-        </Button>
-      </div>
+        </motion.button>
+      </motion.div>
 
+      {/* Planning List */}
       {interventions.length === 0 ? (
-        <Card padding="lg">
-          <div className="text-center py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-dark-card border border-dark-border rounded-xl p-12"
+        >
+          <div className="text-center">
             <svg
-              className="w-16 h-16 text-gray-400 mx-auto mb-4"
+              className="w-16 h-16 text-gray-500 mx-auto mb-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -111,54 +124,62 @@ export default function PlanningPage() {
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-white mb-2">
               Aucune intervention planifiée
             </h3>
-            <p className="text-gray-600 mb-6">
-              Commencez par planifier votre première intervention
+            <p className="text-gray-400 mb-6">
+              Commencez par planifier vos premières interventions sur les chantiers
             </p>
-            <Button variant="primary">Planifier maintenant</Button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-warning text-dark font-semibold rounded-lg hover:bg-warning-light transition-colors"
+            >
+              Planifier maintenant
+            </motion.button>
           </div>
-        </Card>
+        </motion.div>
       ) : (
         <div className="grid gap-4">
-          {interventions.map((intervention) => (
-            <Card
+          {interventions.map((intervention, idx) => (
+            <motion.div
               key={intervention.id}
-              padding="md"
-              hover
-              className="cursor-pointer"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
+              whileHover={{ scale: 1.01, y: -2 }}
+              className="bg-dark-card border border-dark-border rounded-xl p-6 cursor-pointer hover:border-warning/50 transition-all"
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <Badge variant="info">
+                    <span className="px-2 py-1 text-xs font-medium rounded bg-primary/20 text-primary">
                       {new Date(intervention.date).toLocaleDateString('fr-CH', {
                         weekday: 'short',
                         day: 'numeric',
                         month: 'short',
                       })}
-                    </Badge>
+                    </span>
                     {intervention.heure_debut && (
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-sm font-semibold text-white">
                         {intervention.heure_debut}
                       </span>
                     )}
+                    {intervention.duree_minutes && (
+                      <span className="text-xs text-gray-500">
+                        ({intervention.duree_minutes} min)
+                      </span>
+                    )}
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-semibold text-white mb-1">
                     {intervention.chantiers?.titre ?? 'Chantier inconnu'}
                   </h3>
-                  <p className="text-sm text-gray-600">
-                    {intervention.profiles?.full_name ?? 'Intervenant inconnu'}
+                  <p className="text-sm text-gray-400">
+                    <span className="text-gray-500">Intervenant :</span> {intervention.profiles?.full_name ?? 'Intervenant inconnu'}
                   </p>
-                  {intervention.duree_minutes && (
-                    <p className="text-sm text-gray-500">
-                      Durée : {intervention.duree_minutes} min
-                    </p>
-                  )}
                 </div>
                 <svg
-                  className="w-5 h-5 text-gray-400"
+                  className="w-5 h-5 text-gray-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -171,7 +192,7 @@ export default function PlanningPage() {
                   />
                 </svg>
               </div>
-            </Card>
+            </motion.div>
           ))}
         </div>
       )}
