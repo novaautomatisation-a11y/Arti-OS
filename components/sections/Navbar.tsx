@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '../ui/Button'
 
 export function Navbar() {
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [language, setLanguage] = useState<'fr' | 'de'>('fr')
 
@@ -73,7 +75,11 @@ export function Navbar() {
               </button>
             </div>
 
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push('/login')}
+            >
               Se connecter
             </Button>
             <Button
@@ -130,7 +136,12 @@ export function Navbar() {
               </button>
             ))}
             <div className="pt-4 space-y-3">
-              <Button variant="ghost" size="md" className="w-full">
+              <Button
+                variant="ghost"
+                size="md"
+                className="w-full"
+                onClick={() => router.push('/login')}
+              >
                 Se connecter
               </Button>
               <Button

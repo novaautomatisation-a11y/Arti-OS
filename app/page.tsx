@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/sections/Navbar'
 import { HeroSection } from '@/components/sections/HeroSection'
+import { ExpertiseSection } from '@/components/sections/ExpertiseSection'
 import { CraftedForSwiss } from '@/components/sections/CraftedForSwiss'
 import { FeaturesSection } from '@/components/sections/FeaturesSection'
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection'
@@ -16,6 +17,7 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
+      <ExpertiseSection />
       <CraftedForSwiss />
       <FeaturesSection />
       <HowItWorksSection />
