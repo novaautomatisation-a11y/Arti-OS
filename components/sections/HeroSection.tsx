@@ -69,11 +69,14 @@ export function HeroSection() {
 
           {/* Right Column - Visual Block */}
           <div className="relative">
-            {/* Background - Gradient (replace with actual image: /hero-construction.jpg from Freepik) */}
+            {/* Background - Construction Site Photo */}
             <div className="relative w-full h-[500px] lg:h-[600px] rounded-2xl overflow-hidden">
-              {/* Background gradient simulating construction site */}
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-900 via-gray-900 to-blue-900" />
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-900/70 to-gray-900/50 z-10" />
+              {/* Background construction site image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
+                style={{ backgroundImage: 'url(/construction-hero.jpg)' }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-900/60 to-gray-900/40 z-10" />
 
               {/* Glassmorphism Dashboard Card */}
               <div className="absolute inset-0 z-20 flex items-center justify-center p-6">
