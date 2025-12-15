@@ -3,7 +3,7 @@ export function HowItWorksNew() {
     {
       number: '01',
       title: 'Devis',
-      description: 'Crée un devis en 2 minutes. Le client accepte ? Un clic et c'est un chantier.',
+      description: 'Crée un devis en 2 minutes. Le client accepte ? Un clic et ça devient un chantier.',
       features: ['Template réutilisables', 'PDF automatique', 'Envoi direct par email'],
     },
     {
@@ -15,7 +15,7 @@ export function HowItWorksNew() {
     {
       number: '03',
       title: 'Facture',
-      description: 'Les heures et matériaux sont déjà là. Il ne reste qu'à valider et envoyer.',
+      description: 'Les heures et matériaux sont déjà là. Il ne reste plus qu\'à valider et envoyer.',
       features: ['Auto-remplissage', 'TVA suisse', 'Rappels automatiques'],
     },
   ]
