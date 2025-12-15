@@ -1,34 +1,24 @@
 import { Navbar } from '@/components/sections/Navbar'
-import { HeroSection } from '@/components/sections/HeroSection'
-import { CraftedForSwiss } from '@/components/sections/CraftedForSwiss'
-import { FeaturesSection } from '@/components/sections/FeaturesSection'
-import { ConstructionShowcase } from '@/components/sections/ConstructionShowcase'
-import { HowItWorksSection } from '@/components/sections/HowItWorksSection'
+import { NewHeroSection } from '@/components/sections/NewHeroSection'
+import { SwissTradesSection } from '@/components/sections/SwissTradesSection'
+import { HowItWorksNew } from '@/components/sections/HowItWorksNew'
 import { DashboardPreviewSection } from '@/components/sections/DashboardPreviewSection'
-import { TestimonialsSection } from '@/components/sections/TestimonialsSection'
-import { PricingSection } from '@/components/sections/PricingSection'
-import { ResourcesSection } from '@/components/sections/ResourcesSection'
-import { TrustQuality } from '@/components/sections/TrustQuality'
-import { FinalCTA } from '@/components/sections/FinalCTA'
-import { ContactSection } from '@/components/sections/ContactSection'
+import { TestimonialsNew } from '@/components/sections/TestimonialsNew'
+import { PricingNew } from '@/components/sections/PricingNew'
+import { DemoFormSection } from '@/components/sections/DemoFormSection'
 import { Footer } from '@/components/sections/Footer'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Navbar />
-      <HeroSection />
-      <CraftedForSwiss />
-      <FeaturesSection />
-      <ConstructionShowcase />
-      <HowItWorksSection />
+      <NewHeroSection />
+      <SwissTradesSection />
+      <HowItWorksNew />
       <DashboardPreviewSection />
-      <TestimonialsSection />
-      <PricingSection />
-      <ResourcesSection />
-      <TrustQuality />
-      <FinalCTA />
-      <ContactSection />
+      <TestimonialsNew />
+      <PricingNew />
+      <DemoFormSection />
       <Footer />
     </div>
   )
