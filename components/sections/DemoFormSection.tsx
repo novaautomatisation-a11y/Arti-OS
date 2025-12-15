@@ -133,7 +133,7 @@ export function DemoFormSection() {
             {/* Team Size */}
             <div>
               <label htmlFor="teamSize" className="block text-sm font-semibold text-gray-900 mb-2">
-                Taille de l'équipe
+                Taille de l&apos;équipe
               </label>
               <select
                 id="teamSize"

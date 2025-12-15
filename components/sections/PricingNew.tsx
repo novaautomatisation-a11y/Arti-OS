@@ -15,7 +15,7 @@ export function PricingNew() {
       description: '1–2 personnes',
       features: [
         'Devis & factures illimités',
-        'Jusqu'à 3 utilisateurs',
+        'Jusqu\'à 3 utilisateurs',
         'Photos par chantier',
         'Planning de base',
         'Support par email',
@@ -30,7 +30,7 @@ export function PricingNew() {
       badge: 'Le plus choisi',
       features: [
         'Tout du plan Solo',
-        'Jusqu'à 15 utilisateurs',
+        'Jusqu\'à 15 utilisateurs',
         'Planning multi-équipes',
         'Catalogue matériaux',
         'Rapports & stats',
@@ -159,7 +159,7 @@ export function PricingNew() {
         {/* Footer note */}
         <div className="mt-16 text-center space-y-4">
           <p className="text-gray-600">
-            Tous les plans incluent <strong>30 jours d'essai gratuit</strong>. Aucune carte bancaire requise.
+            Tous les plans incluent <strong>30 jours d&apos;essai gratuit</strong>. Aucune carte bancaire requise.
           </p>
           <div className="flex items-center justify-center gap-8 text-sm text-gray-500">
             <span className="flex items-center gap-2">

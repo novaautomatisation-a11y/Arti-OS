@@ -65,7 +65,7 @@ export function SwissTradesSection() {
             Pensé pour les artisans suisses
           </h2>
           <p className="text-xl text-gray-600">
-            Quel que soit votre métier, ArtisanOS s'adapte à votre réalité terrain.
+            Quel que soit votre métier, ArtisanOS s&apos;adapte à votre réalité terrain.
           </p>
         </div>
 

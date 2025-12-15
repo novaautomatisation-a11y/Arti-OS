@@ -32,7 +32,7 @@ export function TestimonialsNew() {
             Ce que disent les artisans
           </h2>
           <p className="text-xl text-gray-600">
-            Des vrais témoignages d'entreprises artisanales en Suisse romande
+            Des vrais témoignages d&apos;entreprises artisanales en Suisse romande
           </p>
         </div>
 
