@@ -17,6 +17,10 @@ export function Navbar() {
     }
   }
 
+  const goToLogin = () => {
+    router.push('/login')
+  }
+
   const navLinks = [
     { label: 'Fonctionnalités', id: 'features' },
     { label: 'Comment ça marche', id: 'how-it-works' },
@@ -75,11 +79,7 @@ export function Navbar() {
               </button>
             </div>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push('/login')}
-            >
+            <Button variant="ghost" size="sm" onClick={goToLogin}>
               Se connecter
             </Button>
             <Button
@@ -136,12 +136,7 @@ export function Navbar() {
               </button>
             ))}
             <div className="pt-4 space-y-3">
-              <Button
-                variant="ghost"
-                size="md"
-                className="w-full"
-                onClick={() => router.push('/login')}
-              >
+              <Button variant="ghost" size="md" className="w-full" onClick={goToLogin}>
                 Se connecter
               </Button>
               <Button
