@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '../ui/Button'
 
 export function Navbar() {
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [language, setLanguage] = useState<'fr' | 'de'>('fr')
 
@@ -13,6 +15,10 @@ export function Navbar() {
       section.scrollIntoView({ behavior: 'smooth', block: 'start' })
       setMobileMenuOpen(false)
     }
+  }
+
+  const goToLogin = () => {
+    router.push('/login')
   }
 
   const navLinks = [
@@ -73,7 +79,7 @@ export function Navbar() {
               </button>
             </div>
 
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={goToLogin}>
               Se connecter
             </Button>
             <Button
@@ -130,7 +136,7 @@ export function Navbar() {
               </button>
             ))}
             <div className="pt-4 space-y-3">
-              <Button variant="ghost" size="md" className="w-full">
+              <Button variant="ghost" size="md" className="w-full" onClick={goToLogin}>
                 Se connecter
               </Button>
               <Button
